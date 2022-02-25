@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/Droid85/nodejs_modules#readme",
   "dependencies": {
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "cross-env": "^7.0.3",
+    "yargs": "^17.3.1"
   }
 }
-
