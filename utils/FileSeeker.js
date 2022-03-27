@@ -1,34 +1,48 @@
 const fs = require('fs');
 const path = require('path');
+const fsPromises = require('fs/promises')
 const { promisify } = require('util');
 const EventEmitter = require('events')
 let { info, warn, error } = require('./logger');
 
-function seeker(dir, file) {
-    const _emitter = new EventEmitter();
+const notifications = new EventEmitter()
 
-    const access = promisify(fs.access);
-    const readdir = promisify(fs.readdir);
-    const readfile = promisify(fs.readFile);
+let _verbose = false
 
-    access(dir)
-        .then(() => readdir(dir))
-        .then(files => {
+function setVerbose(value) {
+    _verbose = value;
+    info(`Verbose mode:  ${value}`)
+}
+
+function putLogsToFile(event, ...payload) {
+    fs.writeFile("./events.log", `${new Date().toISOString()} ${event} ${payload} \n`, { flag: "a+" }, err => {
+        error(err)
+    })
+}
+
+async function seeker(dir, file) {
+    try {
+    await fsPromises.access(dir)
+    const files = await fsPromises.readdir(dir)
+    let content
             if (files.includes(file)) {
-                _emitter.emit("success", path.join(dir, file))
-                return readfile(path.join(dir, file), "utf-8")
+                notifications.emit("success", path.join(dir, file))
+                _verbose && putLogsToFile("success", path.join(dir, file))
+                content = await fsPromises.readFile(path.join(dir, file), "utf-8")
+                notifications.emit("data", content)
+                _verbose && putLogsToFile("data", content)
+            } else {
+                notifications.emit("error", new Error("File doesn't exist"))
+                _verbose && putLogsToFile("error", new Error("File doesn't exist"))
             }
-            throw new Error(error("File doesn't exist"))
-        })
-        .then(content => {
-            _emitter.emit("data", content)
-        })
-        .catch(err => {
-            _emitter.emit("error", err)
-        })
-    return _emitter;
+    } catch(err) {
+            notifications.emit("error", err)
+            _verbose && putLogsToFile("error", err)
+        }
 }
 
 module.exports = {
-    seeker
+    seeker,
+    notifications,
+    setVerbose
 }

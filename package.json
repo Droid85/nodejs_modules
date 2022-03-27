@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js --dir=. --file=package.json",
+    "start": "node index.js --dir=. --file=package.json --verbose",
     "start:debug": "node --inspect-brk index.js"
   },
   "repository": {

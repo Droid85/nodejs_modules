@@ -16,13 +16,18 @@ if (!args.dir || !args.file) {
     process.exit(1)
 }
 
+FileSeeker.setVerbose(args.verbose)
+
 FileSeeker.seeker(args.dir, args.file)
-    .addListener("error", err => {
-        console.error("ERROR", err.toString())
-    })
-    .addListener("success", file => {
-        info("File found ", file)
-    })
-    .addListener("data", content => {
-        info("Content", content)
-    })
+
+FileSeeker.notifications.addListener("error", err => {
+    error("ERROR", err.toString())
+})
+
+FileSeeker.notifications.addListener("success", file => {
+    info("File found ", file)
+})
+
+FileSeeker.notifications.addListener("data", content => {
+    info("File found ", content)
+})
