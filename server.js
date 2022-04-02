@@ -1,12 +1,14 @@
 const http = require('http');
 const fs = require('fs');
-const chalk = require('chalk')
+let { info, warn, error } = require('./utils/logger');
+const logFile = require('./utils/logUrlToFile')
 
 const PORT = 3001;
 
 const server = http.createServer();
 
 server.on('request', (req, res) => {
+    logFile.logUrl(req.url)
     if (req.url == '/') {
         fs.createReadStream('./index.html').pipe(res);
     } else if (req.url == '/favicon.ico') {
@@ -17,5 +19,5 @@ server.on('request', (req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(chalk.green(`Server started on port: ${PORT}`));
+    info(`Server started on port: ${PORT}`);
 });
