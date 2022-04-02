@@ -1,4 +1,4 @@
-const chalk = require("chalk")
+const chalk = require("chalk");
 
 function info(...args) {
     console.log(chalk.green(...args))
@@ -16,4 +16,5 @@ module.exports = {
     info,
     warn,
     error
-}
+};
+
