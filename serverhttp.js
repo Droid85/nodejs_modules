@@ -1,11 +1,13 @@
-const app = require('./app');
+const http = require('http');
 const fs = require('fs');
 let { info, warn, error } = require('./utils/logger');
 const logFile = require('./utils/logUrlToFile')
 
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 
-app.on('request', (req, res) => {
+const server = http.createServer();
+
+server.on('request', (req, res) => {
     logFile.logUrl(req.url)
     if (req.url == '/') {
         fs.createReadStream('./index.html').pipe(res);
@@ -16,6 +18,6 @@ app.on('request', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server has been started on http://localhost:${PORT}...`);
+server.listen(PORT, () => {
+    info(`Server started on port: ${PORT}`);
 });
